@@ -31,10 +31,20 @@ def debug_import_names(import_names, local_package_names, highlight=None):
     )
 
 
+def inspect_local_packages(local_package_names):
+    for local_package_name in local_package_names:
+        try:
+            __import__(local_package_name)
+        except ImportError:
+            print('{} is not a local packages.'.format(local_package_name))
+            raise SystemExit(1)
+
+
 def inspect_files(local_package_names, debug):
     errored = False
     files = []
     local_package_names = {name.rstrip('/') for name in local_package_names}
+    inspect_local_packages(local_package_names)
     for local_package_name in local_package_names:
         files.extend(list_python_files(local_package_name))
     for filename in files:
