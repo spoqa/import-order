@@ -49,6 +49,13 @@ For more information, look around help command.
 
    $ import-order --help
 
+When you ignore order on purpose, simply add ``# no import order`` at the
+import statement.
+
+.. code-block:: python
+
+   from foo.bar import b, a, c  # no import order
+
 
 Author and license
 -------------------
