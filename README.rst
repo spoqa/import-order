@@ -28,9 +28,9 @@ Or clone source code from repository and install it.
 
 .. code-block::
 
-   $ git clone git://.../import_order.git
+   $ git clone https://github.com/spoqa/import-order.git
    $ cd import_order
-   $ python setup.py install
+   $ python setup.py install # or pip install .
 
 
 How to use
