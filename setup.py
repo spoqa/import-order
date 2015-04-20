@@ -20,6 +20,7 @@ setup(
     name="import-order",
     version=VERSION,
     packages=find_packages(),
+    url='https://github.com/spoqa/import-order',
     install_requires=install_requires,
     maintainer='Spoqa',
     maintainer_email='dev' '@' 'spoqa.com',
