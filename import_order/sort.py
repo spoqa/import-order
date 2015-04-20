@@ -27,16 +27,12 @@ def canonical_sort_key(original_name, lineno, col_offset, relative,
         site = True
         stdlib = False
     else:
-        try:
-            site = getattr(
-                __import__(first_name.replace('~', '_')),
-                '__file__',
-                ''
-            ).startswith(tuple(list_site_packages_paths()))
-            stdlib = not site
-        except ImportError:
-            print(original_name)
-            print(first_name)
+        site = getattr(
+            __import__(first_name.replace('~', '_')),
+            '__file__',
+            ''
+        ).startswith(tuple(list_site_packages_paths()))
+        stdlib = not site
     return (  # FIXME: refactor it to use namedtuple
               # 1. Order: __future__, standard libraries, site-packages, local
               (0 if future else (1 if stdlib else (2 if site else 3))),
