@@ -1,6 +1,18 @@
 import-order
 ==============
 
+.. image:: https://pypip.in/wheel/import_order/badge.svg
+    :target: https://pypi.python.org/pypi/import_order/
+    :alt: Wheel Status
+
+.. image:: https://pypip.in/py_versions/import_order/badge.svg
+   :target: https://pypi.python.org/pypi/import_order/
+   :alt: Supported Python versions
+
+.. image:: https://pypip.in/version/import_order/badge.svg
+    :target: https://pypi.python.org/pypi/import_order/
+    :alt: Latest Version
+
 CLI that check the ordering of imports. ordering follow a below rules.
 
 1. Module order: ``__future__`` , standard libraries, site-packages, local.
