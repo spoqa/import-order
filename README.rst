@@ -43,6 +43,19 @@ local package named ``foo`` in root directory of package.
 
    $ import-order foo
 
+If you check your directory ``bar`` with local packages ( ``foo`` , ``baz`` ).
+
+.. code-block::
+
+   $ import-order foo ./bar baz
+
+Or you can check your directory ``bar`` , file ``some.py`` without
+local packages (if ``--only-file`` is missing, it will raise ``ValueError`` ).
+
+.. code-block::
+
+   $ import-order --only-file ./bar some.py
+
 For more information, look around help command.
 
 .. code-block::

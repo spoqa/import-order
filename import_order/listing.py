@@ -51,3 +51,12 @@ def list_import_names(tree):
                        node.lineno, node.col_offset, True)
         else:
             continue
+
+
+def list_all_argument(argument):
+    files = argument.files
+    for local_package_name in argument.local_packages:
+        files.extend(list_python_files(local_package_name))
+    for directory in argument.directories:
+        files.extend(list_python_files(directory))
+    return set(files)

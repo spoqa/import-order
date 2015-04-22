@@ -8,8 +8,8 @@ from pygments import highlight
 from pygments.formatters import Terminal256Formatter
 from pygments.lexers.agile import PythonLexer
 
-from .listing import list_import_names, list_python_files
-from .sort import canonical_sort_key, sort_import_names
+from .listing import list_all_argument, list_import_names
+from .sort import canonical_sort_key, sort_by_type, sort_import_names
 
 
 IGNORE_RE = re.compile(r'#\s*((fuck|shit)\s+)*ignore\s+import\s+order|'
@@ -31,30 +31,20 @@ def debug_import_names(import_names, local_package_names, highlight=None):
     )
 
 
-def inspect_local_packages(local_package_names):
-    for local_package_name in local_package_names:
-        try:
-            __import__(local_package_name)
-        except ImportError:
-            print('{} is not a local packages.'.format(local_package_name))
-            raise SystemExit(1)
-
-
-def inspect_files(local_package_names, debug):
+def inspect_order(args, debug, only_file=False):
+    argument = sort_by_type(args)
+    if not argument.local_packages and not only_file:
+        raise ValueError('At least 1 local package name required.')
     errored = False
-    files = []
-    local_package_names = {name.rstrip('/') for name in local_package_names}
-    inspect_local_packages(local_package_names)
-    for local_package_name in local_package_names:
-        files.extend(list_python_files(local_package_name))
-    for filename in files:
+    for filename in list_all_argument(argument):
         with open(filename) as file_:
             if IGNORE_RE.search('\n'.join(file_.readline() for _ in range(3))):
                 continue
             file_.seek(0)
             tree = ast.parse(file_.read(), filename)
         import_names = list(list_import_names(tree))
-        canonical_order = sort_import_names(import_names, local_package_names)
+        canonical_order = sort_import_names(import_names,
+                                            argument.local_packages)
         prev_import = None
         for actual, expected in zip(import_names, canonical_order):
             if actual[0] != expected[0]:
@@ -91,12 +81,12 @@ def inspect_files(local_package_names, debug):
                 if debug:
                     print('\x1b[32;49;1mExpected order:\x1b[39;49;00m',
                           debug_import_names(canonical_order,
-                                             local_package_names,
+                                             argument.local_packages,
                                              expected),
                           file=sys.stderr)
                     print('\x1b[31;49;1mActual order:\x1b[39;49;00m  ',
                           debug_import_names(import_names,
-                                             local_package_names,
+                                             argument.local_packages,
                                              actual),
                           file=sys.stderr)
                 print(file=sys.stderr)

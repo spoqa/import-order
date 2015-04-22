@@ -1,10 +1,15 @@
-from setuptools import setup, find_packages
+from setuptools import find_packages, setup
 
 from import_order.version import VERSION
 
 
 install_requires = [
     'Pygments >= 2.0.2, < 2.1.0',
+]
+
+
+tests_require = [
+    'pytest >= 2.7.0',
 ]
 
 
@@ -22,6 +27,10 @@ setup(
     packages=find_packages(),
     url='https://github.com/spoqa/import-order',
     install_requires=install_requires,
+    tests_require=tests_require,
+    extras_require={
+        'tests': tests_require,
+    },
     maintainer='Spoqa',
     maintainer_email='dev' '@' 'spoqa.com',
     entry_points={
