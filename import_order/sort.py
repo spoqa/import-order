@@ -10,6 +10,19 @@ CAMEL_CASE_RE = re.compile(r'[A-Z][a-z0-9]+')
 Argument = namedtuple('Argument', ['files', 'local_packages', 'directories'])
 
 
+def package_type_order(future, stdlib, site, relative):
+    order = 100
+    if future:
+        order = 0
+    elif stdlib:
+        order = 1
+    elif site:
+        order = 2
+    elif not relative:
+        order = 3
+    return order
+
+
 def canonical_sort_key(original_name, lineno, col_offset, relative,
                        local_package_names):
     # Replace '_' (95) with '~' (128) to make it below 'z' (122)
@@ -41,7 +54,7 @@ def canonical_sort_key(original_name, lineno, col_offset, relative,
     return (
         # FIXME: refactor it to use namedtuple
         # 1. Order: __future__, standard libraries, site-packages, local
-        (0 if future else (1 if stdlib else (2 if site else 3))),
+        package_type_order(future, stdlib, site, relative),
         from_ or first_name.lower(),
         # 2. CONSTANT_NAMES must be the first
         not variable.isupper() if relative else None,
