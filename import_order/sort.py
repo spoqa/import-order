@@ -23,6 +23,16 @@ def package_type_order(future, stdlib, site, relative):
     return order
 
 
+def condition_order(condition, relative):
+    if not relative:
+        order = 2
+    elif not condition:
+        order = 1
+    else:
+        order = 0
+    return order
+
+
 def canonical_sort_key(original_name, lineno, col_offset, relative,
                        local_package_names):
     # Replace '_' (95) with '~' (128) to make it below 'z' (122)
@@ -57,9 +67,9 @@ def canonical_sort_key(original_name, lineno, col_offset, relative,
         package_type_order(future, stdlib, site, relative),
         from_ or first_name.lower(),
         # 2. CONSTANT_NAMES must be the first
-        not variable.isupper() if relative else None,
+        condition_order(variable.isupper(), relative),
         # 3. ClassNames must be the second
-        not CAMEL_CASE_RE.search(variable) if relative else None,
+        condition_order(CAMEL_CASE_RE.search(variable), relative),
         # 4. Rest must be in alphabetical order
         name.lower()
     )
