@@ -92,7 +92,7 @@ def sort_by_type(args):
     for arg in {name.rstrip('/') for name in args}:
         try:
             __import__(arg)
-        except ImportError:
+        except (ImportError, ValueError):
             if os.path.isdir(arg):
                 directories.append(arg)
             elif os.path.exists(arg):
