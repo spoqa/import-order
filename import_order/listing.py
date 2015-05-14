@@ -53,10 +53,32 @@ def list_import_names(tree):
             continue
 
 
-def list_all_argument(argument):
+def list_exclude_filter(files, excludes):
+    excludes = [os.path.abspath(path) for path in excludes]
+    file_excluds = [path for path in excludes if os.path.isfile]
+    dir_excluds = ['%s%s' % (path, os.sep)
+                   for path in excludes if os.path.isdir]
+    results = []
+    for filename in files:
+        abs_name = os.path.abspath(filename)
+        exclude = False
+        if abs_name in file_excluds:
+            exclude = True
+        for path in dir_excluds:
+            if abs_name.startswith(path):
+                exclude = True
+                break
+        if not exclude:
+            results.append(filename)
+    return results
+
+
+def list_all_argument(argument, filters=[]):
     files = argument.files
     for local_package_name in argument.local_packages:
         files.extend(list_python_files(local_package_name))
     for directory in argument.directories:
         files.extend(list_python_files(directory))
+    for filter_function in filters:
+        files = filter_function(files)
     return set(files)
