@@ -1,7 +1,6 @@
 from __future__ import print_function
 
 import ast
-from functools import partial
 import re
 import sys
 
@@ -9,7 +8,8 @@ from pygments import highlight
 from pygments.formatters import Terminal256Formatter
 from pygments.lexers.agile import PythonLexer
 
-from .listing import list_all_argument, list_exclude_filter, list_import_names
+from .filter import Exclude
+from .listing import list_all_argument, list_import_names
 from .sort import canonical_sort_key, sort_by_type, sort_import_names
 
 
@@ -38,7 +38,7 @@ def inspect_order(args, debug, only_file=False, excludes=[]):
         raise ValueError('At least 1 local package name required.')
     filters = []
     if excludes:
-        filters.append(partial(list_exclude_filter, excludes=excludes))
+        filters.append(Exclude(excludes))
     files = list_all_argument(argument, filters=filters)
     errored = False
     for filename in files:
