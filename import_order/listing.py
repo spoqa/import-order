@@ -53,10 +53,12 @@ def list_import_names(tree):
             continue
 
 
-def list_all_argument(argument):
+def list_all_argument(argument, filters=[]):
     files = argument.files
     for local_package_name in argument.local_packages:
         files.extend(list_python_files(local_package_name))
     for directory in argument.directories:
         files.extend(list_python_files(directory))
+    for filter_function in filters:
+        files = filter_function(files)
     return set(files)

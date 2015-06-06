@@ -8,6 +8,7 @@ from pygments import highlight
 from pygments.formatters import Terminal256Formatter
 from pygments.lexers.agile import PythonLexer
 
+from .filter import Exclude
 from .listing import list_all_argument, list_import_names
 from .sort import canonical_sort_key, sort_by_type, sort_import_names
 
@@ -31,12 +32,16 @@ def debug_import_names(import_names, local_package_names, highlight=None):
     )
 
 
-def inspect_order(args, debug, only_file=False):
+def inspect_order(args, debug, only_file=False, excludes=[]):
     argument = sort_by_type(args)
     if not argument.local_packages and not only_file:
         raise ValueError('At least 1 local package name required.')
+    filters = []
+    if excludes:
+        filters.append(Exclude(excludes))
+    files = list_all_argument(argument, filters=filters)
     errored = False
-    for filename in list_all_argument(argument):
+    for filename in files:
         with open(filename) as file_:
             if IGNORE_RE.search('\n'.join(file_.readline() for _ in range(3))):
                 continue
