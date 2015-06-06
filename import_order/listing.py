@@ -59,6 +59,6 @@ def list_all_argument(argument, filters=[]):
         files.extend(list_python_files(local_package_name))
     for directory in argument.directories:
         files.extend(list_python_files(directory))
-    for filter_function in filters:
-        files = filter_function(files)
+    for filter_ in filters:
+        files = filter_.apply(files)
     return set(files)
