@@ -20,10 +20,14 @@ def list_site_packages_paths():
     except KeyError:
         pass
     else:
+        virtualenv_src_path = os.path.join(virtualenv_path, 'src')
         site_packages_paths.update(
             path
             for path in sys.path
-            if path.startswith(virtualenv_path) and 'site-packages' in path
+            if path.startswith(virtualenv_path) and (
+                'site-packages' in path or
+                path.startswith(virtualenv_src_path)
+            )
         )
     return site_packages_paths
 

@@ -29,7 +29,7 @@ def test_filter_exclude():
              'tests/mock.py']
     exclude_filter = Exclude(['tests/mock.py'])
     assert set(exclude_filter.apply(files)) == set(['tests/test_dir/foo.py',
-                                              'tests/test_dir/bar.py'])
+                                                    'tests/test_dir/bar.py'])
     exclude_filter = Exclude(['tests/test_dir'])
     assert set(exclude_filter.apply(files)) == set(['tests/mock.py'])
     exclude_filter = Exclude(['tests/test_dir/foo.py',
