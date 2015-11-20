@@ -12,7 +12,11 @@ def list_site_packages_paths():
     except AttributeError:
         pass
     try:
-        site_packages_paths.update(site.getusersitepackages())
+        user_site = site.getusersitepackages()
+        if isinstance(user_site, str):
+            site_packages_paths.add(user_site)
+        else:
+            site_packages_paths.update(user_site)
     except AttributeError:
         pass
     try:

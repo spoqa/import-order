@@ -1,4 +1,5 @@
-from import_order.sort import sort_by_type, sort_import_names
+from import_order.sort import (canonical_sort_key,
+                               sort_by_type, sort_import_names)
 
 
 def test_sort_by_type():
@@ -45,3 +46,21 @@ def test_sort_all():
     ]
     sorted_ = sort_import_names(import_names, local_package_names)
     assert import_names == sorted_
+
+
+def test_canonical_sort_key():
+    # ensure re is stdlib
+    actual = canonical_sort_key(
+        're.compile', 1, 0, False, local_package_names=['hello']
+    )
+    assert (1, 're', 2, 2, 're.compile') == actual
+    # ensure pygments is site packages
+    actual = canonical_sort_key(
+        'pygments', 1, 0, False, local_package_names=['hello']
+    )
+    assert (2, 'pygments', 2, 2, 'pygments') == actual
+    # ensure hello is local packages
+    actual = canonical_sort_key(
+        'hello', 1, 0, False, local_package_names=['hello']
+    )
+    assert (3, 'hello', 2, 2, 'hello') == actual
