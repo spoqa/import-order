@@ -9,9 +9,13 @@ import-order
    :target: https://pypi.python.org/pypi/import_order/
    :alt: Supported Python versions
 
-.. image:: https://pypip.in/version/import_order/badge.svg
-    :target: https://pypi.python.org/pypi/import_order/
-    :alt: Latest Version
+.. image:: https://badge.fury.io/py/import-order.svg
+    :target: https://badge.fury.io/py/import-order
+    :alt: pypi packages
+
+.. image:: https://travis-ci.org/spoqa/import-order.svg
+    :target: https://travis-ci.org/spoqa/import-order
+    :alt: travis-ci status
 
 CLI that check the ordering of imports. ordering follow a below rules.
 
