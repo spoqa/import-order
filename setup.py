@@ -10,6 +10,7 @@ install_requires = [
 
 tests_require = [
     'pytest >= 2.7.0',
+    'tox',
 ]
 
 
