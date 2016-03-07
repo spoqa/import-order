@@ -48,19 +48,34 @@ def test_sort_all():
     assert import_names == sorted_
 
 
+def test_sort_distinguish():
+    local_package_names = ['hello']
+    import_names = [
+        ('re.compile', 1, 0, False),
+        ('pytest', 2, 0, False),
+        ('pygments.highlight', 2, 0, True),
+        ('hello.FOO', 3, 0, False),
+        ('hello.foo', 3, 0, False),
+        ('.FooClass', 4, 0, True),
+        ('.a', 4, 0, True),
+    ]
+    sorted_ = sort_import_names(import_names, local_package_names, True)
+    assert import_names == sorted_
+
+
 def test_canonical_sort_key():
     # ensure re is stdlib
     actual = canonical_sort_key(
         're.compile', 1, 0, False, local_package_names=['hello']
     )
-    assert (1, 're', 2, 2, 're.compile') == actual
+    assert (1, 0, 're', 2, 2, 're.compile') == actual
     # ensure pygments is site packages
     actual = canonical_sort_key(
         'pygments', 1, 0, False, local_package_names=['hello']
     )
-    assert (2, 'pygments', 2, 2, 'pygments') == actual
+    assert (2, 0, 'pygments', 2, 2, 'pygments') == actual
     # ensure hello is local packages
     actual = canonical_sort_key(
         'hello', 1, 0, False, local_package_names=['hello']
     )
-    assert (3, 'hello', 2, 2, 'hello') == actual
+    assert (3, 0, 'hello', 2, 2, 'hello') == actual

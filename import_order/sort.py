@@ -34,7 +34,7 @@ def condition_order(condition, relative):
 
 
 def canonical_sort_key(original_name, lineno, col_offset, relative,
-                       local_package_names):
+                       local_package_names, distinguish_from_import=False):
     # Replace '_' (95) with '~' (128) to make it below 'z' (122)
     name = original_name.replace('_', '~')
     first_name = name.split('.', 1)[0]
@@ -71,26 +71,32 @@ def canonical_sort_key(original_name, lineno, col_offset, relative,
                 ''
             ).startswith(tuple(list_site_packages_paths()))
             stdlib = not site
+    sort_from_import = 1 if relative and distinguish_from_import else 0
     return (
         # FIXME: refactor it to use namedtuple
         # 1. Order: __future__, standard libraries, site-packages, local
         package_type_order(future, stdlib, site, relative),
+        # 2. (optional) ``import ...`` is the first, ``from ... import ...` is
+        # the next if ``distinguish_from_import`` is ``True``
+        sort_from_import,
         from_ or first_name.lower(),
-        # 2. CONSTANT_NAMES must be the first
+        # 3. CONSTANT_NAMES must be the first
         condition_order(variable.isupper(), relative),
-        # 3. ClassNames must be the second
+        # 4. ClassNames must be the second
         condition_order(CAMEL_CASE_RE.search(variable), relative),
-        # 4. Rest must be in alphabetical order
+        # 5. Rest must be in alphabetical order
         name.lower()
     )
 
 
-def sort_import_names(import_names, local_package_names):
+def sort_import_names(import_names, local_package_names,
+                      distinguish_from_import=False):
     return sorted(
         import_names,
         key=lambda tup: canonical_sort_key(
             *tup,
-            local_package_names=local_package_names
+            local_package_names=local_package_names,
+            distinguish_from_import=distinguish_from_import
         )
     )
 

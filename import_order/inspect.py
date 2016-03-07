@@ -32,7 +32,8 @@ def debug_import_names(import_names, local_package_names, highlight=None):
     )
 
 
-def inspect_order(args, debug, only_file=False, excludes=[]):
+def inspect_order(args, debug, only_file=False, excludes=[],
+                  distinguish_from_import=False):
     argument = sort_by_type(args)
     if not argument.local_packages and not only_file:
         raise ValueError('At least 1 local package name required.')
@@ -49,7 +50,8 @@ def inspect_order(args, debug, only_file=False, excludes=[]):
             tree = ast.parse(file_.read(), filename)
         import_names = list(list_import_names(tree))
         canonical_order = sort_import_names(import_names,
-                                            argument.local_packages)
+                                            argument.local_packages,
+                                            distinguish_from_import)
         prev_import = None
         for actual, expected in zip(import_names, canonical_order):
             if actual[0] != expected[0]:

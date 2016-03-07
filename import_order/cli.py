@@ -13,6 +13,8 @@ parser.add_option('--only-file', action='store_true', default=False,
                   help='Inspect only files not packages')
 parser.add_option('--exclude', action='append', default=[],
                   help='Ignore specific file or directory.')
+parser.add_option('--distinguish-from-import', action='append', default=[],
+                  help='Distinguish `from ... import ...` and `import ...`')
 
 
 def main():
