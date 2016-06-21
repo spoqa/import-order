@@ -1,4 +1,4 @@
-VERSION_INFO = (0, 0, 7)
+VERSION_INFO = (0, 0, 8)
 
 VERSION = '{0}.{1}.{2}'.format(*VERSION_INFO)
 
