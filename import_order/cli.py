@@ -6,7 +6,7 @@ from .version import VERSION
 
 parser = optparse.OptionParser(
     usage='%prog [options] [local package ...] [file ...] [directory ...]',
-    version='%prog {}'.format(VERSION))
+    version='%prog {0}'.format(VERSION))
 parser.add_option('-d', '--debug', action='store_true', default=False,
                   help='Debug mode.')
 parser.add_option('--only-file', action='store_true', default=False,
