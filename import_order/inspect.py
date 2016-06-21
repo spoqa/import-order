@@ -19,8 +19,8 @@ IGNORE_RE = re.compile(r'#\s*((fuck|shit)\s+)*ignore\s+import\s+order|'
 
 
 def debug_import_names(import_names, local_package_names, highlight=None):
-    fmt = '\x1b[30m{}\x1b[39m \x1b[37m({})\x1b[39m'.format
-    hfmt = '\x1b[35m{}\x1b[39m \x1b[37m({})\x1b[39m'.format
+    fmt = '\x1b[30m{0}\x1b[39m \x1b[37m({1})\x1b[39m'.format
+    hfmt = '\x1b[35m{0}\x1b[39m \x1b[37m({1})\x1b[39m'.format
     return ', '.join(
         (hfmt if highlight in (tup, tup[0]) else fmt)(
             tup[0],
@@ -59,7 +59,7 @@ def inspect_order(args, debug, only_file=False, excludes=[],
                 code_offset = min(expected[1], actual[1])
                 code_end = max(expected[1], actual[1])
                 print(
-                    '\x1b[35m{}\x1b[39m:{}-{}:'.format(
+                    '\x1b[35m{0}\x1b[39m:{1}-{2}:'.format(
                         filename, code_offset, code_end
                     ),
                     end=' ',

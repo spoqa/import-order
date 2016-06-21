@@ -1,3 +1,5 @@
+from pytest import raises
+
 from import_order.sort import (canonical_sort_key,
                                sort_by_type, sort_import_names)
 
@@ -11,6 +13,8 @@ def test_sort_by_type():
     assert set(argument.files) == set(files)
     assert set(argument.local_packages) == set(packages)
     assert set(argument.directories) == set(directories)
+    with raises(IOError):
+        sort_by_type(['foobar/abc.py'])
 
 
 def test_sort_relative_import_belower():
