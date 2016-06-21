@@ -50,7 +50,7 @@ def canonical_sort_key(original_name, lineno, col_offset, relative,
     if future or local:
         site = False
         stdlib = False
-    elif first_name in {'flaskext'}:
+    elif first_name in set(['flaskext']):
         # flaskext is created at runtime, and has no __file__
         site = True
         stdlib = False
@@ -105,17 +105,18 @@ def sort_by_type(args):
     files = []
     local_packages = []
     directories = []
-    for arg in {name.rstrip('/') for name in args}:
+    for arg in args:
+        name = arg.rstrip('/')
         try:
-            __import__(arg)
+            __import__(name)
         except (ImportError, ValueError):
-            if os.path.isdir(arg):
-                directories.append(arg)
-            elif os.path.exists(arg):
-                files.append(arg)
+            if os.path.isdir(name):
+                directories.append(name)
+            elif os.path.exists(name):
+                files.append(name)
             else:
-                raise IOError("{} dosen't exists.".format(arg))
+                raise IOError("{} dosen't exists.".format(name))
         else:
-            local_packages.append(arg)
+            local_packages.append(name)
     return Argument(files=files, local_packages=local_packages,
                     directories=directories)

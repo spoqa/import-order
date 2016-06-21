@@ -6,7 +6,7 @@ import sys
 
 
 def list_site_packages_paths():
-    site_packages_paths = {site.USER_SITE}
+    site_packages_paths = set([site.USER_SITE])
     try:
         site_packages_paths.update(site.getsitepackages())
     except AttributeError:
