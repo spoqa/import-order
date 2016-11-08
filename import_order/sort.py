@@ -115,7 +115,7 @@ def sort_by_type(args):
             elif os.path.exists(name):
                 files.append(name)
             else:
-                raise IOError("{0} dosen't exists.".format(name))
+                raise IOError("{0} doesn't exists.".format(name))
         else:
             local_packages.append(name)
     return Argument(files=files, local_packages=local_packages,
