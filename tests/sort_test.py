@@ -67,12 +67,27 @@ def test_sort_relative_import():
     import_names = [
         ('...aladin.Aladin', 'hello.aladin.Aladin', 1, 0, True),
         ('...book.Book', 'hello.book.Book', 2, 0, True),
-        ('.form.BookForm', 'hello.web.admin.form.BookForm', 3, 0, True),
+        ('...yes24.Yes24', 'hello.yes24.Yes24', 3, 0, True),
         ('..db.sess', 'hello.web.db.sess', 4, 0, True),
-        ('..util.', 'hello.web.util.get_count', 5, 0, True),
-        ('...yes24.Yes24', 'hello.yes24.Yes24', 6, 0, True),
+        ('..util.get_count', 'hello.web.util.get_count', 5, 0, True),
+        ('.form.BookForm', 'hello.web.admin.form.BookForm', 6, 0, True),
     ]
     sorted_ = sort_import_names(import_names, local_package_names)
+    assert import_names == sorted_
+
+
+def test_sort_resolve_relative_import_name():
+    local_package_names = ['hello']
+    import_names = [
+        ('...aladin.Aladin', 'hello.aladin.Aladin', 1, 0, True),
+        ('...book.Book', 'hello.book.Book', 2, 0, True),
+        ('.form.BookForm', 'hello.web.admin.form.BookForm', 3, 0, True),
+        ('..db.sess', 'hello.web.db.sess', 4, 0, True),
+        ('..util.get_count', 'hello.web.util.get_count', 5, 0, True),
+        ('...yes24.Yes24', 'hello.yes24.Yes24', 6, 0, True),
+    ]
+    sorted_ = sort_import_names(import_names, local_package_names,
+                                resolve_relative_import_name=True)
     assert import_names == sorted_
 
 

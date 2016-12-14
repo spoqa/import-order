@@ -35,9 +35,13 @@ def condition_order(condition, relative):
 
 def canonical_sort_key(original_name, resolved_name, lineno, col_offset,
                        relative, local_package_names,
-                       distinguish_from_import=False):
+                       distinguish_from_import=False,
+                       resolve_relative_import_name=False):
+    name = original_name
+    if resolve_relative_import_name:
+        name = resolved_name
     # Replace '_' (95) with '~' (128) to make it below 'z' (122)
-    name = resolved_name.replace('_', '~')
+    name = name.replace('_', '~')
     first_name = name.split('.', 1)[0]
     from_, _, variable = name.rpartition('.')
     future = first_name == '~~future~~'
@@ -86,13 +90,15 @@ def canonical_sort_key(original_name, resolved_name, lineno, col_offset,
 
 
 def sort_import_names(import_names, local_package_names,
-                      distinguish_from_import=False):
+                      distinguish_from_import=False,
+                      resolve_relative_import_name=False):
     return sorted(
         import_names,
         key=lambda tup: canonical_sort_key(
             *tup,
             local_package_names=local_package_names,
-            distinguish_from_import=distinguish_from_import
+            distinguish_from_import=distinguish_from_import,
+            resolve_relative_import_name=resolve_relative_import_name,
         )
     )
 
