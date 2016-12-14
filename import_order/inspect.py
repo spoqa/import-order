@@ -1,10 +1,10 @@
 from __future__ import print_function
 
 import ast
+from io import open
 import re
 import sys
 
-from io import open
 from pygments import highlight
 from pygments.formatters import Terminal256Formatter
 from pygments.lexers.agile import PythonLexer
