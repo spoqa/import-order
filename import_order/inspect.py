@@ -4,6 +4,7 @@ import ast
 import re
 import sys
 
+from io import open
 from pygments import highlight
 from pygments.formatters import Terminal256Formatter
 from pygments.lexers.agile import PythonLexer
@@ -43,7 +44,7 @@ def inspect_order(args, debug, only_file=False, excludes=[],
     files = list_all_argument(argument, filters=filters)
     errored = False
     for filename in files:
-        with open(filename) as file_:
+        with open(filename, encoding='utf-8') as file_:
             if IGNORE_RE.search('\n'.join(file_.readline() for _ in range(3))):
                 continue
             file_.seek(0)
