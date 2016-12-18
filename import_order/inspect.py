@@ -1,10 +1,10 @@
 from __future__ import print_function
 
 import ast
+from io import open
 import re
 import sys
 
-from io import open
 from pygments import highlight
 from pygments.formatters import Terminal256Formatter
 from pygments.lexers.agile import PythonLexer
@@ -12,6 +12,7 @@ from pygments.lexers.agile import PythonLexer
 from .filter import Exclude
 from .listing import list_all_argument, list_import_names
 from .sort import canonical_sort_key, sort_by_type, sort_import_names
+from .util import get_package_name
 
 
 IGNORE_RE = re.compile(r'#\s*((fuck|shit)\s+)*ignore\s+import\s+order|'
@@ -24,7 +25,7 @@ def debug_import_names(import_names, local_package_names, highlight=None):
     hfmt = '\x1b[35m{0}\x1b[39m \x1b[37m({1})\x1b[39m'.format
     return ', '.join(
         (hfmt if highlight in (tup, tup[0]) else fmt)(
-            tup[0],
+            '{}({})'.format(tup[0], tup[1]),
             ','.join(str(v)
                      for v in canonical_sort_key(
                          *tup, local_package_names=local_package_names))
@@ -34,7 +35,8 @@ def debug_import_names(import_names, local_package_names, highlight=None):
 
 
 def inspect_order(args, debug, only_file=False, excludes=[],
-                  distinguish_from_import=False):
+                  distinguish_from_import=False,
+                  resolve_relative_import_name=False):
     argument = sort_by_type(args)
     if not argument.local_packages and not only_file:
         raise ValueError('At least 1 local package name required.')
@@ -44,21 +46,23 @@ def inspect_order(args, debug, only_file=False, excludes=[],
     files = list_all_argument(argument, filters=filters)
     errored = False
     for filename in files:
+        package_name = get_package_name(filename)
         with open(filename, encoding='utf-8') as file_:
             if IGNORE_RE.search('\n'.join(file_.readline() for _ in range(3))):
                 continue
             file_.seek(0)
             tree = ast.parse(file_.read(), filename)
-        import_names = list(list_import_names(tree))
+        import_names = list(list_import_names(tree, package_name))
         canonical_order = sort_import_names(import_names,
                                             argument.local_packages,
-                                            distinguish_from_import)
+                                            distinguish_from_import,
+                                            resolve_relative_import_name)
         prev_import = None
         for actual, expected in zip(import_names, canonical_order):
-            if actual[0] != expected[0]:
+            if actual.original_name != expected.original_name:
                 errored = True
-                code_offset = min(expected[1], actual[1])
-                code_end = max(expected[1], actual[1])
+                code_offset = min(expected.lineno, actual.lineno)
+                code_end = max(expected.lineno, actual.lineno)
                 print(
                     '\x1b[35m{0}\x1b[39m:{1}-{2}:'.format(
                         filename, code_offset, code_end
@@ -66,12 +70,32 @@ def inspect_order(args, debug, only_file=False, excludes=[],
                     end=' ',
                     file=sys.stderr
                 )
+                expected_name = expected.original_name
+                if expected_name != expected.resolved_name:
+                    expected_name = '{}({})'.format(
+                        expected.original_name,
+                        expected.resolved_name,
+                    )
+                actual_name = actual.original_name
+                if actual_name != actual.resolved_name:
+                    actual_name = '{}({})'.format(
+                        actual.original_name,
+                        actual.resolved_name,
+                    )
                 if prev_import is None:  # first
-                    print(expected[0], 'must be the first, not', actual[0],
-                          file=sys.stderr)
+                    print(
+                        expected_name,
+                        'must be the first, not',
+                        actual_name,
+                        file=sys.stderr
+                    )
                 else:
-                    print(expected[0], 'must be above than', actual[0],
-                          file=sys.stderr)
+                    print(
+                        expected_name,
+                        'must be above than',
+                        actual_name,
+                        file=sys.stderr
+                    )
                 lineno_cols = len(str(code_end))
                 format_line = (u'{0:' + str(lineno_cols) + '} {1}').format
                 with open(filename, 'rb') as file_:

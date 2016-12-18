@@ -33,17 +33,17 @@ def condition_order(condition, relative):
     return order
 
 
-def canonical_sort_key(original_name, lineno, col_offset, relative,
-                       local_package_names, distinguish_from_import=False):
+def canonical_sort_key(original_name, resolved_name, lineno, col_offset,
+                       relative, local_package_names,
+                       distinguish_from_import=False,
+                       resolve_relative_import_name=False):
+    name = original_name
+    if resolve_relative_import_name:
+        name = resolved_name
     # Replace '_' (95) with '~' (128) to make it below 'z' (122)
-    name = original_name.replace('_', '~')
+    name = name.replace('_', '~')
     first_name = name.split('.', 1)[0]
-    if relative:
-        from_, _, variable = name.rpartition('.')
-        from_ = from_.lower()
-    else:
-        from_ = ''
-        variable = ''
+    from_, _, variable = name.rpartition('.')
     future = first_name == '~~future~~'
     local = (not first_name or
              first_name.replace('~', '_') in local_package_names)
@@ -90,13 +90,15 @@ def canonical_sort_key(original_name, lineno, col_offset, relative,
 
 
 def sort_import_names(import_names, local_package_names,
-                      distinguish_from_import=False):
+                      distinguish_from_import=False,
+                      resolve_relative_import_name=False):
     return sorted(
         import_names,
         key=lambda tup: canonical_sort_key(
             *tup,
             local_package_names=local_package_names,
-            distinguish_from_import=distinguish_from_import
+            distinguish_from_import=distinguish_from_import,
+            resolve_relative_import_name=resolve_relative_import_name,
         )
     )
 

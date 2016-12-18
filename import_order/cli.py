@@ -15,8 +15,12 @@ parser.add_option('--exclude', action='append', default=[],
                   help='Ignore specific file or directory.')
 parser.add_option('--distinguish-from-import', action='append', default=[],
                   help='Distinguish `from ... import ...` and `import ...`')
+parser.add_option('--resolve-relative-import-name', action='store_true',
+                  default=False, help='Resolve relative import name to sort '
+                  'relative import correctly')
 
 
 def main():
     options, args = parser.parse_args()
-    inspect_order(args, options.debug, options.only_file, options.exclude)
+    inspect_order(args, options.debug, options.only_file, options.exclude,
+                  options.resolve_relative_import_name)

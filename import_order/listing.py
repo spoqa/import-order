@@ -4,6 +4,9 @@ import os.path
 import site
 import sys
 
+from . import ImportItem
+from .util import resolve_name
+
 
 def list_site_packages_paths():
     site_packages_paths = set([site.USER_SITE])
@@ -46,17 +49,31 @@ def list_python_files(dirname):
             yield path
 
 
-def list_import_names(tree):
+def list_import_names(tree, package_name):
     for node in ast.iter_child_nodes(tree):
         if isinstance(node, ast.Import):
             for name in node.names:
-                yield name.name, node.lineno, node.col_offset, False
+                yield ImportItem(
+                    original_name=name.name,
+                    resolved_name=name.name,
+                    lineno=node.lineno,
+                    col_offset=node.col_offset,
+                    relative=False
+                )
         elif isinstance(node, ast.ImportFrom):
             for name in node.names:
-                yield ('.' * node.level +
-                       (node.module + '.' if node.module else '') +
-                       name.name,
-                       node.lineno, node.col_offset, True)
+                original_name = (
+                    '.' * node.level +
+                    (node.module + '.' if node.module else '') +
+                    name.name
+                )
+                yield ImportItem(
+                    original_name=original_name,
+                    resolved_name=resolve_name(original_name, package_name),
+                    lineno=node.lineno,
+                    col_offset=node.col_offset,
+                    relative=True
+                )
         else:
             continue
 
